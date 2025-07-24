@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hydration Expense Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Light theme colors */
+            --primary: #0ea5e9;
+            --primary-dark: #0284c7;
+            --secondary: #f0f9ff;
+            --accent: #38bdf8;
+            --text: #0f172a;
+            --text-light: #64748b;
+            --gray-light: #e2e8f0;
+            --card-bg: #ffffff;
+            --body-bg: #f0f9ff;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --border: #e2e8f0;
+        }
+
+        [data-theme="dark"] {
+            --primary: #0ea5e9;
+            --primary-dark: #0369a1;
+            --secondary: #0f172a;
+            --accent: #38bdf8;
+            --text: #f8fafc;
+            --text-light: #94a3b8;
+            --gray-light: #334155;
+            --card-bg: #1e293b;
+            --body-bg: #0f172a;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --border: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--body-bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 0;
+            overflow-x: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--white);
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            border: 1px solid var(--border);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-size: 1rem;
+            transition: border 0.3s ease;
+            background-color: var(--card-bg);
+            color: var(--text);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+        }
+
+        .button {
+            display: inline-block;
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .button-block {
+            display: block;
+            width: 100%;
+        }
+
+        .summary-wrapper {
+            margin-top: 1rem;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-card i {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th {
+            background-color: var(--primary);
+            color: var(--card-bg);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(240, 249, 255, 0.05);
+        }
+
+        .status {
+            font-weight: 600;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .status-owes {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .status-gets {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .status-neutral {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .history-section {
+            margin-top: 2rem;
+        }
+
+        .switch-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-switch {
+            display: flex;
+            background-color: var(--gray-light);
+            border-radius: 999px;
+            padding: 0.3rem;
+        }
+
+        .tab-option {
+            padding: 0.5rem 1.25rem;
+            cursor: pointer;
+            border-radius: 999px;
+            transition: all 0.3s ease;
+            color: var(--text);
+        }
+
+        .tab-option.active {
+            background-color: var(--primary);
+            color: var(--card-bg);
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-light);
+            font-style: italic;
+        }
+
+        .alert {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .alert-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .alert-error {
+            background-color: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 2rem;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* Theme switcher */
+        .theme-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 999;
+            background-color: var(--card-bg);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .theme-switch:hover {
+            transform: scale(1.1);
+        }
+
+        .theme-switch i {
+            font-size: 1.2rem;
+            color: var(--text);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .modal-header i {
+            color: var(--warning);
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .modal-body {
+            margin-bottom: 1.5rem;
+            color: var(--text);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+
+        .modal-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .modal-btn-cancel {
+            background-color: transparent;
+            border: 1px solid var(--gray-light);
+            color: var(--text);
+        }
+
+        .modal-btn-cancel:hover {
+            background-color: var(--gray-light);
+        }
+
+        .modal-btn-confirm {
+            background-color: var(--warning);
+            border: none;
+            color: white;
+        }
+
+        .modal-btn-confirm:hover {
+            background-color: #e69309;
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-switch" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </div>
+
+    <header>
+        <div class="container header-content">
+            <div class="logo">💧</div>
+            <h1>Hydration Expense Tracker</h1>
+        </div>
+    </header>
+
+    <!-- Reset Confirmation Modal -->
+    <div class="modal-overlay" id="resetModal">
+        <div class="modal">
+            <div class="modal-header">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3 class="modal-title">Reset Monthly Calculations</h3>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to reset all calculations for the current month?</p>
+                <p>This will:</p>
+                <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                    <li>Archive current month's data</li>
+                    <li>Reset all bubble counts to zero</li>
+                    <li>Clear all current transactions</li>
+                    <li>Keep all roommate information</li>
+                </ul>
+                <p style="margin-top: 0.5rem;">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-cancel" onclick="closeResetModal()">Cancel</button>
+                <button class="modal-btn modal-btn-confirm" onclick="resetCalculations()">Reset Month</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="alertBox" class="alert"></div>
+        
+        <div class="management-section" style="display: flex; gap: 1.5rem; margin-bottom: 2rem;">
+            <div class="card" style="flex: 1; max-width: 48%;">
+                <h3><i class="fas fa-user-plus"></i> Add Roommate</h3>
+                <div class="form-group">
+                    <input type="text" id="roommateName" placeholder="Enter roommate name" />
+                </div>
+                <button class="button button-block" onclick="addRoommate()">Add Roommate</button>
+            </div>
+
+            <div class="card" style="flex: 1; max-width: 48%;">
+                <h3><i class="fas fa-tint"></i> Log Water Bubble</h3>
+                <div class="form-group">
+                    <select id="roommateSelect"></select>
+                </div>
+                <button class="button button-block" onclick="logBubble()">Log Bubble (₹10)</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3><i class="fas fa-chart-bar"></i> Expense Summary</h3>
+            <div class="summary-wrapper">
+                <div class="stats" id="summaryStats"></div>
+                <div id="summaryTable"></div>
+                <div style="margin-top: 1.5rem; display: flex; justify-content: flex-end;">
+                    <button class="button" style="background-color: var(--warning);" onclick="confirmReset()">
+                        <i class="fas fa-sync-alt"></i> Reset Monthly Calculations
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card history-section">
+            <h3><i class="fas fa-history"></i> Transaction History</h3>
+            <div class="switch-wrapper">
+                <div class="tab-switch">
+                    <div class="tab-option active" onclick="switchTab('all')">All</div>
+                    <div class="tab-option" onclick="switchTab('byPerson')">By Person</div>
+                </div>
+            </div>
+            <div id="historyContent"></div>
+        </div>
+        
+        <!-- Previous Months Archive -->
+        <div class="card archive-section">
+            <div class="archive-header">
+                <h3><i class="fas fa-archive"></i> Previous Months</h3>
+                <div class="archive-toggle" onclick="toggleArchive()">
+                    <span id="archiveToggleText">Show Archive</span>
+                    <i class="fas fa-chevron-down" id="archiveToggleIcon"></i>
+                </div>
+            </div>
+            <div id="archiveContent" class="archive-content"></div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Hydration Expense Tracker © 2025 | Manage your water expenses effortlessly</p>
+    </footer>
+
+    <script>
+        // Data Storage
+        let roommates = JSON.parse(localStorage.getItem("roommates")) || {};
+        let logs = JSON.parse(localStorage.getItem("logs")) || [];
+        let archives = JSON.parse(localStorage.getItem("archives")) || [];
+        let currentTab = 'all';
+        let currentTheme = localStorage.getItem("theme") || "light";
+        let isArchiveOpen = false;
+        
+        // Theme Management
+        function setTheme(theme) {
+            document.documentElement.setAttribute("data-theme", theme);
+            localStorage.setItem("theme", theme);
+            currentTheme = theme;
+            
+            const themeIcon = document.getElementById("themeToggle").querySelector("i");
+            if (theme === "dark") {
+                themeIcon.className = "fas fa-sun";
+            } else {
+                themeIcon.className = "fas fa-moon";
+            }
+        }
+        
+        function toggleTheme() {
+            if (currentTheme === "light") {
+                setTheme("dark");
+            } else {
+                setTheme("light");
+            }
+        }
+        
+        // Helper Functions
+        function saveData() {
+            localStorage.setItem("roommates", JSON.stringify(roommates));
+            localStorage.setItem("logs", JSON.stringify(logs));
+            localStorage.setItem("archives", JSON.stringify(archives));
+            renderSummary();
+            updateSelect();
+            renderHistory();
+            renderArchive();
+        }
+        
+        function showAlert(message, type) {
+            const alertBox = document.getElementById("alertBox");
+            alertBox.className = type === 'success' ? 'alert alert-success' : 'alert alert-error';
+            alertBox.textContent = message;
+            alertBox.style.display = 'block';
+            
+            setTimeout(() => {
+                alertBox.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Reset functionality
+        function confirmReset() {
+            document.getElementById("resetModal").classList.add("active");
+        }
+        
+        function closeResetModal() {
+            document.getElementById("resetModal").classList.remove("active");
+        }
+        
+        function resetCalculations() {
+            // Create archive entry for current month
+            if (logs.length > 0) {
+                const now = new Date();
+                const monthName = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                
+                // Calculate totals for archive
+                const totalBubbles = logs.length;
+                const totalCost = totalBubbles * 10;
+                const memberCount = Object.keys(roommates).length;
+                const share = memberCount > 0 ? totalCost / memberCount : 0;
+                
+                // Create consumption data for each roommate
+                const roommateData = {};
+                for (const name in roommates) {
+                    const count = roommates[name];
+                    const paid = count * 10;
+                    const diff = paid - share;
+                    roommateData[name] = {
+                        count,
+                        paid,
+                        balance: diff.toFixed(2)
+                    };
+                }
+                
+                // Create archive object
+                const archiveEntry = {
+                    month: monthName,
+                    date: now.toISOString(),
+                    totalBubbles,
+                    totalCost,
+                    perPersonShare: share.toFixed(2),
+                    roommates: roommateData,
+                    logs: [...logs]
+                };
+                
+                // Add to archives
+                archives.unshift(archiveEntry);
+                
+                // Keep only the last 12 months in archives
+                if (archives.length > 12) {
+                    archives = archives.slice(0, 12);
+                }
+            }
+            
+            // Reset current data
+            for (const name in roommates) {
+                roommates[name] = 0;
+            }
+            logs = [];
+            
+            // Save and update UI
+            saveData();
+            closeResetModal();
+            showAlert("Monthly calculations have been reset and archived", 'success');
+        }
+        
+        // Archive management
+        function toggleArchive() {
+            const archiveContent = document.getElementById("archiveContent");
+            const toggleText = document.getElementById("archiveToggleText");
+            const toggleIcon = document.getElementById("archiveToggleIcon");
+            
+            isArchiveOpen = !isArchiveOpen;
+            
+            if (isArchiveOpen) {
+                archiveContent.style.maxHeight = archiveContent.scrollHeight + "px";
+                toggleText.textContent = "Hide Archive";
+                toggleIcon.className = "fas fa-chevron-up";
+            } else {
+                archiveContent.style.maxHeight = "0";
+                toggleText.textContent = "Show Archive";
+                toggleIcon.className = "fas fa-chevron-down";
+            }
+        }
+        
+        function renderArchive() {
+            const archiveContentDiv = document.getElementById("archiveContent");
+            
+            if (archives.length === 0) {
+                archiveContentDiv.innerHTML = '<div class="no-data">No archived months found</div>';
+                return;
+            }
+            
+            let archiveHtml = '';
+            
+            archives.forEach((archive, index) => {
+                archiveHtml += `
+                    <div style="border-bottom: 1px solid var(--border); padding: 1rem 0; ${index === 0 ? 'padding-top: 0;' : ''}">
+                        <h4 style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <span>${archive.month}</span>
+                            <span style="font-size: 0.9rem; color: var(--text-light);">
+                                ₹${archive.totalCost} total | ${archive.totalBubbles} bubbles
+                            </span>
+                        </h4>
+                        
+                        <div style="margin-top: 1rem;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Bubbles</th>
+                                        <th>Paid (₹)</th>
+                                        <th>Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                `;
+                
+                for (const name in archive.roommates) {
+                    const data = archive.roommates[name];
+                    const balance = parseFloat(data.balance);
+                    
+                    let statusClass = 'status-neutral';
+                    let statusText = `Balanced`;
+                    
+                    if (balance > 0.01) {
+                        statusClass = 'status-gets';
+                        statusText = `Gets ₹${Math.abs(balance).toFixed(2)}`;
+                    } else if (balance < -0.01) {
+                        statusClass = 'status-owes';
+                        statusText = `Owes ₹${Math.abs(balance).toFixed(2)}`;
+                    }
+                    
+                    archiveHtml += `
+                        <tr>
+                            <td>${name}</td>
+                            <td>${data.count}</td>
+                            <td>₹${data.paid}</td>
+                            <td><span class="status ${statusClass}">${statusText}</span></td>
+                        </tr>
+                    `;
+                }
+                
+                archiveHtml += `
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            archiveContentDiv.innerHTML = archiveHtml;
+            
+            // Update max-height if archive is currently open
+            if (isArchiveOpen) {
+                archiveContentDiv.style.maxHeight = archiveContentDiv.scrollHeight + "px";
+            }
+        }
+        
+        // Core Functions
+        function addRoommate() {
+            const name = document.getElementById("roommateName").value.trim();
+            if (name && !roommates[name]) {
+                roommates[name] = 0;
+                document.getElementById("roommateName").value = "";
+                saveData();
+                showAlert(`Roommate "${name}" added successfully!`, 'success');
+            } else if (!name) {
+                showAlert("Please enter a name.", 'error');
+            } else {
+                showAlert("This roommate already exists.", 'error');
+            }
+        }
+        
+        function updateSelect() {
+            const select = document.getElementById("roommateSelect");
+            select.innerHTML = "";
+            
+            if (Object.keys(roommates).length === 0) {
+                const option = document.createElement("option");
+                option.textContent = "No roommates added yet";
+                select.appendChild(option);
+                select.disabled = true;
+                return;
+            }
+            
+            select.disabled = false;
+            for (const name in roommates) {
+                const option = document.createElement("option");
+                option.value = name;
+                option.textContent = name;
+                select.appendChild(option);
+            }
+        }
+        
+        function logBubble() {
+            const name = document.getElementById("roommateSelect").value;
+            if (name && roommates[name] !== undefined) {
+                roommates[name]++;
+                logs.push({ 
+                    name, 
+                    date: new Date().toISOString(), 
+                    cost: 10 
+                });
+                saveData();
+                showAlert(`Water bubble logged for ${name}!`, 'success');
+            } else {
+                showAlert("Please select a valid roommate.", 'error');
+            }
+        }
+        
+        function renderSummary() {
+            const summaryStatsDiv = document.getElementById("summaryStats");
+            const summaryTableDiv = document.getElementById("summaryTable");
+            
+            // Calculate summary stats
+            const totalBubbles = logs.length;
+            const totalCost = totalBubbles * 10;
+            const memberCount = Object.keys(roommates).length;
+            const share = memberCount > 0 ? totalCost / memberCount : 0;
+            
+            // Render stats cards
+            let statsHtml = `
+                <div class="stat-card">
+                    <i class="fas fa-tint"></i>
+                    <div class="stat-value">${totalBubbles}</div>
+                    <div class="stat-label">Total Bubbles</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-rupee-sign"></i>
+                    <div class="stat-value">₹${totalCost}</div>
+                    <div class="stat-label">Total Cost</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-users"></i>
+                    <div class="stat-value">${memberCount}</div>
+                    <div class="stat-label">Roommates</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-coins"></i>
+                    <div class="stat-value">₹${share.toFixed(2)}</div>
+                    <div class="stat-label">Per Person</div>
+                </div>
+            `;
+            summaryStatsDiv.innerHTML = statsHtml;
+            
+            // Render table
+            if (memberCount === 0) {
+                summaryTableDiv.innerHTML = '<div class="no-data">No roommates added yet</div>';
+                return;
+            }
+            
+            let tableHtml = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Bubbles Brought</th>
+                            <th>Amount Paid (₹)</th>
+                            <th>Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            for (const name in roommates) {
+                const count = roommates[name];
+                const paid = count * 10;
+                const diff = paid - share;
+                
+                let statusClass = 'status-neutral';
+                let statusText = `Balanced`;
+                
+                if (diff > 0.01) {
+                    statusClass = 'status-gets';
+                    statusText = `Gets ₹${diff.toFixed(2)}`;
+                } else if (diff < -0.01) {
+                    statusClass = 'status-owes';
+                    statusText = `Owes ₹${Math.abs(diff).toFixed(2)}`;
+                }
+                
+                tableHtml += `
+                    <tr>
+                        <td>${name}</td>
+                        <td>${count}</td>
+                        <td>₹${paid.toFixed(2)}</td>
+                        <td><span class="status ${statusClass}">${statusText}</span></td>
+                    </tr>
+                `;
+            }
+            
+            tableHtml += `
+                    </tbody>
+                </table>
+            `;
+            summaryTableDiv.innerHTML = tableHtml;
+        }
+        
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // Update UI for tabs
+            const tabs = document.querySelectorAll('.tab-option');
+            tabs.forEach(t => {
+                t.classList.remove('active');
+            });
+            
+            const activeTab = document.querySelector(`.tab-option:nth-child(${tab === 'all' ? 1 : 2})`);
+            if (activeTab) activeTab.classList.add('active');
+            
+            renderHistory();
+        }
+        
+        function renderHistory() {
+            const historyDiv = document.getElementById("historyContent");
+            
+            if (logs.length === 0) {
+                historyDiv.innerHTML = '<div class="no-data">No transactions recorded yet</div>';
+                return;
+            }
+            
+            if (currentTab === 'all') {
+                // Sort by date, newest first
+                const sortedLogs = [...logs].sort((a, b) => 
+                    new Date(b.date) - new Date(a.date)
+                );
+                
+                let tableHtml = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Roommate</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                for (const log of sortedLogs) {
+                    tableHtml += `
+                        <tr>
+                            <td>${formatDate(log.date)}</td>
+                            <td>${log.name}</td>
+                            <td>₹${log.cost.toFixed(2)}</td>
+                        </tr>
+                    `;
+                }
+                
+                tableHtml += `
+                        </tbody>
+                    </table>
+                `;
+                historyDiv.innerHTML = tableHtml;
+            } else {
+                // Filtered by person
+                let personFilterHtml = '';
+                
+                for (const name in roommates) {
+                    const personLogs = logs.filter(log => log.name === name)
+                        .sort((a, b) => new Date(b.date) - new Date(a.date));
+                    
+                    if (personLogs.length === 0) continue;
+                    
+                    personFilterHtml += `
+                        <h3 style="margin-top: 1.5rem;">${name}'s Transactions</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+                    
+                    for (const log of personLogs) {
+                        personFilterHtml += `
+                            <tr>
+                                <td>${formatDate(log.date)}</td>
+                                <td>₹${log.cost.toFixed(2)}</td>
+                            </tr>
+                        `;
+                    }
+                    
+                    personFilterHtml += `
+                            </tbody>
+                        </table>
+                    `;
+                }
+                
+                historyDiv.innerHTML = personFilterHtml || '<div class="no-data">No transactions recorded yet</div>';
+            }
+        }
+        
+        // Initialize
+        window.onload = () => {
+            // Set theme based on saved preference
+            setTheme(currentTheme);
+            
+            // Add event listener to theme toggle
+            document.getElementById("themeToggle").addEventListener("click", toggleTheme);
+            
+            updateSelect();
+            renderSummary();
+            renderHistory();
+            
+            // Responsive management for small screens
+            function checkWidth() {
+                const managementSection = document.querySelector('.management-section');
+                if (window.innerWidth < 768 && managementSection) {
+                    managementSection.style.flexDirection = 'column';
+                    const cards = managementSection.querySelectorAll('.card');
+                    cards.forEach(card => {
+                        card.style.maxWidth = '100%';
+                    });
+                } else if (managementSection) {
+                    managementSection.style.flexDirection = 'row';
+                    const cards = managementSection.querySelectorAll('.card');
+                    cards.forEach(card => {
+                        card.style.maxWidth = '48%';
+                    });
+                }
+            }
+            
+            // Run on load and when window resizes
+            checkWidth();
+            window.addEventListener('resize', checkWidth);
+        };
+    </script>
+</body>
+</html>
