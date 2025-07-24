@@ -1,6 +1,6 @@
 # 💧 Hydration Expense Tracker
 
-A simple and efficient web app built using **PHP** and **MySQL** to manage and split the cost of water bubble purchases among roommates. Designed to track expenses, ensure transparency, and make monthly bill-splitting easy.
+A simple and efficient web app built using **HTML**, **CSS** and **JavaScript** to manage and split the cost of water bubble purchases among roommates. Designed to track expenses, ensure transparency, and make monthly bill-splitting easy.
 
 ---
 
